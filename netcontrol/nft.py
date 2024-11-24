@@ -54,11 +54,12 @@ class Nft:
         self._execute_nft_cmd("add map insalan netcontrol-mac2mark { type ether_addr : mark; }")
         
         # Marks packets from authenticated users using the map
-        self._execute_nft_cmd("add chain insalan netcontrol-filter { type filter hook prerouting priority 0; }")
+        self._execute_nft_cmd("add chain insalan netcontrol-filter { type filter hook prerouting priority 2; }")
         self._execute_nft_cmd("add rule insalan netcontrol-filter ip daddr != 172.16.1.0/24 ether saddr @netcontrol-auth meta mark set ether saddr map @netcontrol-mac2mark")
 
-        # Let traffic without "bypass" pass through if no external rules have been added
-        self._execute_nft_cmd("add rule insalan netcontrol-filter meta mark > 1024 meta mark set meta mark ^ 1024")
+        # Let traffic with "bypass" pass through if no external rules have been added
+        self._execute_nft_cmd("add chain insalan netcontrol-debypass { type filter hook prerouting priority 0; }")
+        self._execute_nft_cmd("add rule insalan netcontrol-debypass meta mark > 1024 meta mark set meta mark ^ 1024")
         
         # Block external requests to the netcontrol module
         ips = subprocess.run('ip addr | grep -o "[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*/[0-9]*" | grep -o "[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*"', shell=True, capture_output=True).stdout.decode("utf-8").split("\n")[:-1]
