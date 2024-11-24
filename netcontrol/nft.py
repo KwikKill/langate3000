@@ -108,7 +108,7 @@ class Nft:
             mac (str): MAC address
         """
         
-        if bypass:
+        if bypass and mark < 1024:
             mark += 1024
         
         mac = mac.lower()
