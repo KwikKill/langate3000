@@ -244,7 +244,7 @@ class UserAPITestCase(TestCase):
         self.assertEqual(request.data["results"][0]["devices"], [])
 
         # Verify the number of fields for the user
-        self.assertEqual(len(request.data["results"][0]), 10)
+        self.assertEqual(len(request.data["results"][0]), 11)
 
     def test_get_user_list_not_logged_in(self):
         """

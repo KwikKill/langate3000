@@ -54,7 +54,7 @@ class DeviceManager(models.Manager):
     """
 
     @staticmethod
-    def create_device(mac, name, whitelisted=False, bypass=None, mark=None):
+    def create_device(mac, name, whitelisted=False, bypass=False, mark=None):
         """
         Create a device with the given mac address and name
         """
@@ -62,11 +62,9 @@ class DeviceManager(models.Manager):
             name = generate_dev_name()
         if not mark:
             mark = SETTINGS["marks"][0]["value"]
-        if bypass is None and whitelisted is not None:
+        if whitelisted:
             # Whitelisted devices have bypass by default
-            bypass = whitelisted
-        elif bypass is None:
-            bypass = False
+            bypass = True
         
         # Validate the MAC address
         validate_mac(mac)
