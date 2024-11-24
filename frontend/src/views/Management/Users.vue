@@ -66,6 +66,11 @@ const { addNotification } = useNotificationStore();
             key: 'team',
             ordering: false,
           },
+          {
+            name: 'Accès aux sites bloqués',
+            key: 'bypass',
+            ordering: false,
+          },
         ]"
         :create="{
           modal: {
@@ -125,7 +130,7 @@ const { addNotification } = useNotificationStore();
                 required: false,
               },
               {
-                name: 'Bypass',
+                name: 'Donner accès aux sites bloqués',
                 key: 'bypass',
                 type: 'checkbox',
                 required: false,
@@ -194,7 +199,7 @@ const { addNotification } = useNotificationStore();
                   type: 'text',
                 },
                 {
-                  name: 'Bypass',
+                  name: 'Donner accès aux sites bloqués',
                   key: 'bypass',
                   type: 'checkbox',
                   required: false,
@@ -202,7 +207,9 @@ const { addNotification } = useNotificationStore();
               ],
             },
             function: async (device, fields) => {
-              return await edit_user((device as unknown as User).id, fields as unknown as User);
+              if (await edit_user((device as unknown as User).id, fields as unknown as User)) {
+                addNotification('L\'utilisateur a bien été mis à jour', 'info');
+              }
             },
           },
           {
@@ -221,7 +228,7 @@ const { addNotification } = useNotificationStore();
             },
             function: async (device, fields) => {
               if (await reset_password((device as unknown as User).id, fields.password)) {
-                return 'Le mot de passe a bien été changé';
+                addNotification('Le mot de passe a bien été changé', 'info');
               }
             },
           },
@@ -263,8 +270,9 @@ const { addNotification } = useNotificationStore();
               ],
             },
             function: async (device, fields) => {
-              await delete_user((device as unknown as User).id);
-              return 'l\'utilisateur a été supprimé';
+              if (await delete_user((device as unknown as User).id)) {
+                addNotification('L\'utilisateur a bien été supprimé', 'info');
+              }
             },
           },
         ]"

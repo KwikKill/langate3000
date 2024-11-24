@@ -193,8 +193,12 @@ class DeviceManager(models.Manager):
                 device.mark = mark
             else:
                 mark = device.mark
-            if bypass is None:
+            
+            if bypass is not None and bypass != device.bypass:
+                device.bypass = bypass
+            else:
                 bypass = device.bypass
+            
             try:
                 netcontrol.set_mark(device.mac, mark, bypass)
             except requests.HTTPError as e:

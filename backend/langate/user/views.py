@@ -82,7 +82,8 @@ class UserView(generics.RetrieveUpdateDestroyAPIView):
             )
         if "bypass" in request.data:
             user = UserSerializer(request.user, context={"request": request}).data
-            for d in user.devices:
+            user_devices = UserDevice.objects.filter(user=request.user)
+            for d in user_devices:
                 DeviceManager.edit_device(d, bypass=request.data["bypass"])
         return self.partial_update(request, *args, **kwargs)
 
