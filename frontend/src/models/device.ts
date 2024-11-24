@@ -3,6 +3,7 @@ export interface Device {
   name: string;
   mac: string;
   whitelisted: boolean;
+  bypass: boolean;
 }
 
 export interface UserDevice extends Device {

@@ -23,11 +23,11 @@ class NetworkConfig(AppConfig):
 
     def ready(self):
         """
-            Reconnecting devices registered in the Device set but not in the Ipset
-            This is important when for example the Ipset is flushed, you want the users that are already
+            Reconnecting devices registered in the Device set but not in netcontrol.
+            This is important when for example netcontrol is reset, you want the users that are already
             registered on the gate to be automatically reconnected when the gate restarts.
             This is important to maintain the consistency between the device state from django's point of view
-            and the device state from the Ipset's point of view.
+            and the device state from netcontrol's point of view.
         """
         from langate.network.models import Device, UserDevice, DeviceManager
 
@@ -46,24 +46,24 @@ class NetworkConfig(AppConfig):
             ]
         ):
 
-            logger.info(_("[PortalConfig] Adding previously connected devices to the ipset"))
+            logger.info(_("[PortalConfig] Adding previously connected devices to netcontrol"))
 
             for dev in Device.objects.all():
                 userdevice = UserDevice.objects.filter(mac=dev.mac).first()
                 try:
                     if userdevice is not None:
-                        connect_res = netcontrol.connect_user(userdevice.mac, userdevice.mark, userdevice.user.username)
+                        connect_res = netcontrol.connect_user(userdevice.mac, userdevice.mark, userdevice.bypass, userdevice.user.username)
                     else:
-                        connect_res = netcontrol.connect_user(dev.mac, dev.mark, dev.name)
+                        connect_res = netcontrol.connect_user(dev.mac, dev.mark, dev.bypass, dev.name)
                 except requests.HTTPError as e:
                     logger.info("[PortalConfig] {e}")
 
                 try:
-                    mark_res = netcontrol.set_mark(dev.mac, dev.mark)
+                    mark_res = netcontrol.set_mark(dev.mac, dev.mark, dev.bypass)
                 except requests.HTTPError as e:
                     logger.info("[PortalConfig] {e}")
 
-            logger.info(_("[PortalConfig] Add default whitelist devices to the ipset"))
+            logger.info(_("[PortalConfig] Add default whitelist devices to netcontrol"))
             if os.path.exists("assets/misc/whitelist.txt"):
                 with open("assets/misc/whitelist.txt", "r") as f:
                     for line in f:
@@ -74,17 +74,18 @@ class NetworkConfig(AppConfig):
                             mark = line[2] if len(line) == 3 else SETTINGS["marks"][0]["value"]
                             dev = Device.objects.filter(mac=mac).first()
                             if dev is None:
-                                dev = DeviceManager.create_device(mac, name, True, mark)
+                                dev = DeviceManager.create_device(mac, name, True, True, mark)
                             else:
                                 dev.whitelisted = True
+                                dev.bypass = True
                                 dev.save()
                                 try:
-                                    connect_res = netcontrol.connect_user(dev.mac, dev.mark, dev.name)
+                                    connect_res = netcontrol.connect_user(dev.mac, dev.mark, dev.bypass, dev.name)
                                 except requests.HTTPError as e:
                                     logger.info("[PortalConfig] {e}")
 
                                 try:
-                                    mark_res = netcontrol.set_mark(dev.mac, mark)
+                                    mark_res = netcontrol.set_mark(dev.mac, mark, dev.bypass)
                                 except requests.HTTPError as e:
                                     logger.info("[PortalConfig] {e}")
                         else:

@@ -91,7 +91,10 @@ class User(AbstractBaseUser):
     # Relevant for the player role
     tournament = models.CharField(max_length=100, null=True)
     team = models.CharField(max_length=100, null=True)
-
+    
+    # Whether the user's devices have bypass on
+    bypass = models.BooleanField(default=False)
+    
     USERNAME_FIELD = "username"
     objects = UserManager()
 

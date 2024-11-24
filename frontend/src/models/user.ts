@@ -18,5 +18,6 @@ export interface User {
   max_device_nb: number;
   tournament?: string;
   team?: string;
+  bypass: boolean;
   devices: UserDevice[];
 }

@@ -56,6 +56,7 @@ class FullDeviceSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     name = serializers.CharField(max_length=100, required=False)
     mac = serializers.CharField(max_length=17, required=False)
+    bypass = serializers.BooleanField(required=False)
     whitelisted = serializers.BooleanField(read_only=True)
     ip = serializers.IPAddressField(allow_null=True, required=False)
     user = serializers.CharField(allow_null=True, required=False)

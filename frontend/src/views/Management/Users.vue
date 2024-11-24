@@ -124,6 +124,12 @@ const { addNotification } = useNotificationStore();
                 type: 'text',
                 required: false,
               },
+              {
+                name: 'Bypass',
+                key: 'bypass',
+                type: 'checkbox',
+                required: false,
+              },
             ],
           },
           function: async (data) => {
@@ -186,6 +192,12 @@ const { addNotification } = useNotificationStore();
                   name: 'Equipe',
                   key: 'team',
                   type: 'text',
+                },
+                {
+                  name: 'Bypass',
+                  key: 'bypass',
+                  type: 'checkbox',
+                  required: false,
                 },
               ],
             },

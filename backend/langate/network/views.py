@@ -471,6 +471,7 @@ class UserDeviceDetail(APIView):
               request.data.get("mac", device.mac),
               request.data.get("name", device.name),
               request.data.get("mark", device.mark),
+              request.data.get("bypass", device.bypass),
             )
 
             return Response(status=status.HTTP_200_OK)
