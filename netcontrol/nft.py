@@ -59,7 +59,7 @@ class Nft:
 
         # Let traffic with "bypass" pass through if no external rules have been added
         self._execute_nft_cmd("add chain insalan netcontrol-debypass { type filter hook prerouting priority 0; }")
-        self._execute_nft_cmd("add rule insalan netcontrol-debypass meta mark > 1024 meta mark set meta mark ^ 1024")
+        self._execute_nft_cmd("add rule insalan netcontrol-debypass meta mark > 1024 meta mark set meta mark & 0xFFFFFBFF")
         
         # Block external requests to the netcontrol module
         ips = subprocess.run('ip addr | grep -o "[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*/[0-9]*" | grep -o "[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*"', shell=True, capture_output=True).stdout.decode("utf-8").split("\n")[:-1]

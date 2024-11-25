@@ -76,14 +76,14 @@ Et elle :
 ```bash
 nft add chain insalan netcontrol-debypass { type filter hook prerouting priority 0; }
 
-nft add rule insalan netcontrol-debypass meta mark > 1024 meta mark set meta mark ^ 1024
+nft add rule insalan netcontrol-debypass meta mark > 1024 meta mark set meta mark & 0xFFFFFBFF
 ```
 
 Cette règle s'applique aux paquets qui:
 - `meta mark > 1024` : Ont le bypass activé.
 
 Et elle :
-- `meta mark set meta mark ^ 1024` : Leur enlève le bypass, tout simplement (l'opérateur bitwise ^ va simplement toggle le bit de 1024, c'est pour ça qu'on n'applique la règle qu'aux marks supérieures à 1024) (on suppose ne jamais avoir de mark supérieure à 2048, ça n'aurait pas de sens de toute façon).
+- `meta mark set meta mark & ~1024` : Leur enlève le bypass, tout simplement (on suppose ne jamais avoir de mark supérieure à 2048, ça n'aurait pas de sens de toute façon).
 
 > Alors oui mais ça sert à quoi le bypass du coup, si on l'enlève dans tous les cas ?
 
