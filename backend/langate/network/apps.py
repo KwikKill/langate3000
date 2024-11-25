@@ -68,16 +68,17 @@ class NetworkConfig(AppConfig):
                 with open("assets/misc/whitelist.txt", "r") as f:
                     for line in f:
                         line = line.strip().split("|")
-                        if len(line) == 2 or len(line) == 3:
+                        if len(line) >= 2 and len(line) <= 4:
                             name = line[0]
                             mac = line[1]
-                            mark = line[2] if len(line) == 3 else SETTINGS["marks"][0]["value"]
+                            mark = line[2] if len(line) >= 3 else SETTINGS["marks"][0]["value"]
+                            bypass = line[3] if len(line) >= 4 else True
                             dev = Device.objects.filter(mac=mac).first()
                             if dev is None:
-                                dev = DeviceManager.create_device(mac, name, True, True, mark)
+                                dev = DeviceManager.create_device(mac, name, True, False, mark)
                             else:
                                 dev.whitelisted = True
-                                dev.bypass = True
+                                dev.bypass = bypass
                                 dev.save()
                                 try:
                                     connect_res = netcontrol.connect_user(dev.mac, dev.mark, dev.bypass, dev.name)

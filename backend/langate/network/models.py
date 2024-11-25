@@ -62,9 +62,6 @@ class DeviceManager(models.Manager):
             name = generate_dev_name()
         if not mark:
             mark = SETTINGS["marks"][0]["value"]
-        if whitelisted:
-            # Whitelisted devices have bypass by default
-            bypass = True
         
         # Validate the MAC address
         validate_mac(mac)

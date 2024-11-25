@@ -43,6 +43,11 @@ const { addNotification } = useNotificationStore();
             key: 'mark',
             ordering: true,
           },
+          {
+            name: 'Accès aux sites bloqués',
+            key: 'bypass',
+            ordering: false,
+          },
         ]"
         :pagination="true"
         :search="true"
@@ -71,6 +76,12 @@ const { addNotification } = useNotificationStore();
                   key: 'mark',
                   type: 'number',
                   required: true,
+                },
+                {
+                  name: 'Donner accès aux sites bloqués',
+                  key: 'bypass',
+                  type: 'checkbox',
+                  required: false,
                 },
               ],
             },
@@ -114,7 +125,7 @@ const { addNotification } = useNotificationStore();
             return success;
           },
           modal: {
-            title: 'Ajouter un appareil à la whitelist',
+            title: 'Ajouter à la whitelist',
             fields: [
               {
                 name: 'Nom',
@@ -133,6 +144,12 @@ const { addNotification } = useNotificationStore();
                 key: 'mark',
                 type: 'number',
                 required: true,
+              },
+              {
+                name: 'Donner accès aux sites bloqués',
+                key: 'bypass',
+                type: 'checkbox',
+                required: false,
               },
             ],
           },
