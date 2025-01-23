@@ -78,6 +78,14 @@ const showPassword = ref<{ [key: string]: boolean }>({});
             class="h-48 rounded-md border border-black bg-theme-nav p-2 text-white"
             :required="field.required"
           />
+          <div v-else-if="field.type === 'checkbox'" class="flex items-center">
+            <input
+              :id="field.key"
+              v-model="field.value"
+              type="checkbox"
+              class="ml-auto rounded-md border border-black bg-theme-nav p-2 text-white"
+            />
+          </div>
           <!-- If type is password, don't autocomplete with saved password -->
           <div
             v-else
