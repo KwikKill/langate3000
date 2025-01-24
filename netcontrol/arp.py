@@ -1,4 +1,4 @@
-from http.client import HTTPException
+from fastapi import HTTPException
 import logging
 
 class Arp:
