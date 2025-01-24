@@ -12,6 +12,10 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.core.validators import MinValueValidator
 
+import prometheus_client as prometheus
+
+users_gauge = prometheus.Gauge("users", "Total amount of users registered.")
+
 class UserManager(BaseUserManager):
     """
     Managers the User objects (kind of like a serializer but not quite that)
@@ -35,6 +39,7 @@ class UserManager(BaseUserManager):
         )
         user.set_password(password)
         user.save()
+        users_gauge.inc()
         return user
 
     def create_superuser(self, username, password, **extra_fields):
