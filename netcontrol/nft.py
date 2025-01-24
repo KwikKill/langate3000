@@ -43,7 +43,7 @@ class Nft:
         else:
             return json.loads(output)["nftables"]
 
-    def setup_portail(self):
+    def setup_portail(self) -> None:
         """
         Sets up the necessary nftables rules that block network access to unauthenticated devices, and marks packets based on the map
         """
@@ -73,7 +73,7 @@ class Nft:
 
         self.logger.info("Gate nftables set up")
         
-    def remove_portail(self):
+    def remove_portail(self) -> None:
         """
         Removes netcontrol-related chains, sets and maps from insalan table
         """
@@ -85,7 +85,7 @@ class Nft:
         
         self.logger.info("Gate nftables removed")
 
-    def set_mark(self, mac: str, mark: int):
+    def set_mark(self, mac: str, mark: int) -> None:
         """
         Changes mark of the given MAC address
         
@@ -97,7 +97,7 @@ class Nft:
         self.delete_user(mac)
         self.connect_user(mac, mark, "previously_connected_device")
 
-    def connect_user(self, mac: str, mark: int, name: str):
+    def connect_user(self, mac: str, mark: int, name: str) -> None:
         """
         Connects given device with given mark
         
