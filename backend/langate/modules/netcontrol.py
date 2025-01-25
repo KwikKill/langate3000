@@ -9,7 +9,8 @@ POST_REQUESTS = ["connect_user"]
 DELETE_REQUESTS = ["disconnect_user"]
 PUT_REQUESTS = ["set_mark"]
 
-connected_devices_gauge = prometheus.Gauge("connected_devices", "Amount of connected devices")
+connected_devices_gauge = prometheus.Gauge("langate_connected_devices", "Amount of connected devices", labelnames=["mark"])
+mark_table = {} # used to keep track of mark for MAC addresses between requests
 
 class Netcontrol:
     """
@@ -69,7 +70,8 @@ class Netcontrol:
         self.logger.info(f"Connecting user with MAC address {mac} ({name})...")
         try:
             self.request("connect_user", {"mac": mac, "mark": mark, "name": name})
-            connected_devices_gauge.inc()
+            mark_table[mac] = mark
+            connected_devices_gauge.labels(str(mark)).inc()
         except:
             raise
 
@@ -80,7 +82,9 @@ class Netcontrol:
         self.logger.info(f"Disconnecting user with MAC address {mac}...")
         try:
             self.request("disconnect_user", {"mac": mac})
-            connected_devices_gauge.dec()
+            if mac in mark_table:
+                old_mark = mark_table.pop(mac)
+                connected_devices_gauge.labels(str(old_mark)).dec()
         except:
             raise
 
@@ -90,6 +94,11 @@ class Netcontrol:
         """
         self.logger.info(f"Setting mark of user with MAC address {mac} to {mark}...")
         self.request("set_mark", {"mac": mac, "mark": mark})
+        if mac in mark_table:
+            old_mark = mark_table[mac]
+            connected_devices_gauge.labels(str(old_mark)).dec()
+        mark_table[mac] = mark
+        connected_devices_gauge.labels(str(mark)).inc()
 
     def __init__(self):
         """

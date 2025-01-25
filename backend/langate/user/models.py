@@ -14,7 +14,7 @@ from django.core.validators import MinValueValidator
 
 import prometheus_client as prometheus
 
-users_gauge = prometheus.Gauge("users", "Total amount of users registered.")
+users_gauge = prometheus.Gauge("langate_users", "Total amount of users registered.")
 
 class UserManager(BaseUserManager):
     """
