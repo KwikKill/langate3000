@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
+from langate.utils.renderers import PlainTextRenderer
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
@@ -484,5 +485,7 @@ class UserDeviceDetail(APIView):
             return Response({"error": e.message}, status=status.HTTP_400_BAD_REQUEST)
 
 class Metrics(APIView):
+    renderer_classes = [PlainTextRenderer]
+
     def get(self, request):
         return HttpResponse(prometheus.generate_latest().decode("utf-8"), content_type=prometheus.CONTENT_TYPE_LATEST)
