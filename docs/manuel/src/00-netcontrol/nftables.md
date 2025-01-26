@@ -56,7 +56,7 @@ Ensuite, voyons les trois règles qui définissent le comportement de netcontrol
 ### Mark
 
 ```bash
-nft add chain insalan netcontrol-filter { type filter hook prerouting priority 0; }
+nft add chain insalan netcontrol-filter { type filter hook prerouting priority 2; }
 
 nft add rule insalan netcontrol-filter ip daddr != 172.16.1.0/24 ether saddr @netcontrol-auth meta mark set ether saddr map @netcontrol-mac2mark
 ```
@@ -70,6 +70,24 @@ Et elle :
 `meta mark set` signifie que la règle modifie la mark du paquet, dans ses méta-informations.
 
 `ether saddr map @netcontrol-mac2mark` signifie que la mark est récupérée depuis l'entrée dans la map correspondant à `ether saddr`, ou la MAC de la source.
+
+### Bypass
+
+```bash
+nft add chain insalan netcontrol-debypass { type filter hook prerouting priority 0; }
+
+nft add rule insalan netcontrol-debypass meta mark > 1024 meta mark set meta mark & 0xFFFFFBFF
+```
+
+Cette règle s'applique aux paquets qui:
+- `meta mark > 1024` : Ont le bypass activé.
+
+Et elle :
+- `meta mark set meta mark & ~1024` : Leur enlève le bypass, tout simplement (on suppose ne jamais avoir de mark supérieure à 2048, ça n'aurait pas de sens de toute façon).
+
+> Alors oui mais ça sert à quoi le bypass du coup, si on l'enlève dans tous les cas ?
+
+Eh bien non, on ne l'enlève pas dans tous les cas : seulement si le paquet est à destination d'une **IP non blacklistée**, où si **on n'a pas lancé le script bypass**. En effet, ce script rajoute une règle avec la priorité 1 : elle s'éxécute donc entre la règle qui assigne les marks et celle-ci. Cette règle qui est rajoutée prend les paquets à destination d'une **IP blacklistée avec le bypass**, et leur assigne la mark 1024 qui leur permet à la fois d'**ignorer la blacklist** et de **passer par Quantic**.
 
 ### Blocage des requêtes HTTP extérieures sur netcontrol
 

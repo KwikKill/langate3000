@@ -53,6 +53,11 @@ const queryParams = window.location.search;
             key: 'user',
             ordering: false,
           },
+          {
+            name: 'Accès aux sites bloqués',
+            key: 'bypass',
+            ordering: false,
+          },
         ]"
         :pagination="true"
         :search="true"
@@ -72,11 +77,13 @@ const queryParams = window.location.search;
               ],
             },
             function: async (device, fields) => {
-              return await deleteDevice((device as unknown as Device).id);
+              if (await deleteDevice((device as unknown as Device).id)) {
+                addNotification('L\'appareil a bien été supprimé', 'info');
+              }
             },
           },
           {
-            hint: 'Modifier la mark',
+            hint: 'Modifier l\'appareil',
             icon: 'pencil',
             key: 'update',
             modal: {
@@ -97,7 +104,7 @@ const queryParams = window.location.search;
             function: async (device, fields) => {
               const success = await editDevice((device as unknown as Device).id, fields as unknown as Device)
               if (success) {
-                addNotification('L\'appareil a bien été modifiée', 'info');
+                addNotification('L\'appareil a bien été modifié', 'info');
               }
               return success;
             },

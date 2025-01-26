@@ -37,6 +37,7 @@ class Device(models.Model):
       validators=[validate_mac]
     )
     whitelisted = models.BooleanField(default=False)
+    bypass = models.BooleanField(default=False)
     mark = models.IntegerField(default=SETTINGS["marks"][0]["value"])
 
 class UserDevice(Device):
@@ -53,7 +54,7 @@ class DeviceManager(models.Manager):
     """
 
     @staticmethod
-    def create_device(mac, name, whitelisted=False, mark=None):
+    def create_device(mac, name, whitelisted=False, bypass=False, mark=None):
         """
         Create a device with the given mac address and name
         """
@@ -61,12 +62,12 @@ class DeviceManager(models.Manager):
             name = generate_dev_name()
         if not mark:
             mark = SETTINGS["marks"][0]["value"]
-
+        
         # Validate the MAC address
         validate_mac(mac)
 
         try:
-            netcontrol.connect_user(mac, mark, name)
+            netcontrol.connect_user(mac, mark, bypass, name)
             logger.info("Connected device %s (the mac %s has been connected)", name, mac)
         except requests.HTTPError as e:
             raise ValidationError(
@@ -74,7 +75,7 @@ class DeviceManager(models.Manager):
             ) from e
 
         try:
-            device = Device.objects.create(mac=mac, name=name, whitelisted=whitelisted, mark=mark)
+            device = Device.objects.create(mac=mac, name=name, whitelisted=whitelisted, bypass=bypass, mark=mark)
             device.save()
             return device
         except Exception as e:
@@ -124,9 +125,10 @@ class DeviceManager(models.Manager):
         validate_mac(mac)
 
         mark = get_mark(user)
+        bypass = user.bypass
 
         try:
-            netcontrol.connect_user(mac, mark, user.username)
+            netcontrol.connect_user(mac, mark, False, user.username)
             logger.info(
                 "Connected device %s (owned by %s) at %s to the internet.",
                 mac,
@@ -139,7 +141,7 @@ class DeviceManager(models.Manager):
             ) from e
 
         try:
-            device = UserDevice.objects.create(mac=mac, name=name, user=user, ip=ip, mark=mark)
+            device = UserDevice.objects.create(mac=mac, name=name, user=user, ip=ip, mark=mark, bypass=bypass)
             device.save()
             return device
         except Exception as e:
@@ -161,7 +163,7 @@ class DeviceManager(models.Manager):
         return DeviceManager.delete_device(Device.mac)
 
     @staticmethod
-    def edit_device(device: Device, mac, name, mark=None):
+    def edit_device(device: Device, mac=None, name=None, mark=None, bypass=None):
         """
         Edit the status of a device
         """
@@ -174,19 +176,28 @@ class DeviceManager(models.Manager):
             try:
                 netcontrol.disconnect_user(device.mac)
                 # Connect the new MAC
-                netcontrol.connect_user(mac, device.mark, device.name)
+                netcontrol.connect_user(mac, device.mark, device.bypass, device.name)
                 device.mac = mac
             except requests.HTTPError as e:
                 raise ValidationError(
                     _("Could not connect user")
                 ) from e
-        if mark and mark != device.mark:
-            # Check if the mark is valid
-            if mark not in [m["value"] for m in SETTINGS["marks"]]:
-                raise ValidationError(_("Invalid mark"))
-            device.mark = mark
+        if (mark and mark != device.mark) or (bypass is not None and bypass != device.bypass):
+            if mark and mark != device.mark:
+                # Check if the mark is valid
+                if mark not in [m["value"] for m in SETTINGS["marks"]]:
+                    raise ValidationError(_("Invalid mark"))
+                device.mark = mark
+            else:
+                mark = device.mark
+            
+            if bypass is not None and bypass != device.bypass:
+                device.bypass = bypass
+            else:
+                bypass = device.bypass
+            
             try:
-                netcontrol.set_mark(device.mac, mark)
+                netcontrol.set_mark(device.mac, mark, bypass)
             except requests.HTTPError as e:
                 raise ValidationError(
                     _("Could not set mark")

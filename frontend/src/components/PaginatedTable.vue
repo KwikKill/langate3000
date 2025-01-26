@@ -107,6 +107,7 @@ const getProperty = (
   fct?: (data: unknown) => string,
 ) => {
   if (fct) return fct(object);
+  if (typeof object[key] === 'boolean') return object[key] ? '✔' : '✘';
   if (object[key] !== undefined) return object[key];
   return '';
 };

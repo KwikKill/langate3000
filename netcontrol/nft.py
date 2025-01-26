@@ -54,9 +54,13 @@ class Nft:
         self._execute_nft_cmd("add map insalan netcontrol-mac2mark { type ether_addr : mark; }")
         
         # Marks packets from authenticated users using the map
-        self._execute_nft_cmd("add chain insalan netcontrol-filter { type filter hook prerouting priority 0; }")
+        self._execute_nft_cmd("add chain insalan netcontrol-filter { type filter hook prerouting priority 2; }")
         self._execute_nft_cmd("add rule insalan netcontrol-filter ip daddr != 172.16.1.0/24 ether saddr @netcontrol-auth meta mark set ether saddr map @netcontrol-mac2mark")
 
+        # Let traffic with "bypass" pass through if no external rules have been added
+        self._execute_nft_cmd("add chain insalan netcontrol-debypass { type filter hook prerouting priority 0; }")
+        self._execute_nft_cmd("add rule insalan netcontrol-debypass meta mark > 1024 meta mark set meta mark & 0xFFFFFBFF")
+        
         # Block external requests to the netcontrol module
         ips = subprocess.run('ip addr | grep -o "[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*/[0-9]*" | grep -o "[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*"', shell=True, capture_output=True).stdout.decode("utf-8").split("\n")[:-1]
         docker0_ip = subprocess.run("ip addr show docker0 | awk '/inet / {print $2}' | cut -d'/' -f1", shell=True, capture_output=True).stdout.decode("utf-8").strip()
@@ -85,7 +89,7 @@ class Nft:
         
         self.logger.info("Gate nftables removed")
 
-    def set_mark(self, mac: str, mark: int):
+    def set_mark(self, mac: str, mark: int, bypass: bool):
         """
         Changes mark of the given MAC address
         
@@ -95,16 +99,19 @@ class Nft:
         """
         
         self.delete_user(mac)
-        self.connect_user(mac, mark, "previously_connected_device")
+        self.connect_user(mac, mark, bypass, "previously_connected_device")
 
-    def connect_user(self, mac: str, mark: int, name: str):
+    def connect_user(self, mac: str, mark: int, bypass: bool, name: str):
         """
         Connects given device with given mark
         
         Args:
             mac (str): MAC address
         """
-       
+        
+        if bypass and mark < 1024:
+            mark += 1024
+        
         mac = mac.lower()
         try:
             self._execute_nft_cmd(f"add element insalan netcontrol-mac2mark {{ {mac} : {str(mark)} }}")

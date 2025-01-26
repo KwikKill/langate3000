@@ -80,6 +80,11 @@ class UserView(generics.RetrieveUpdateDestroyAPIView):
                 {"error": [_("Password cannot be changed")]},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        if "bypass" in request.data:
+            user = UserSerializer(request.user, context={"request": request}).data
+            user_devices = UserDevice.objects.filter(user=request.user)
+            for d in user_devices:
+                DeviceManager.edit_device(d, bypass=request.data["bypass"])
         return self.partial_update(request, *args, **kwargs)
 
 
