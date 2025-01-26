@@ -37,7 +37,7 @@ La langate 3000 est le fruit d'une coopération historique entre les équipes Sy
 
 - Gabriel "**KwikKill**" Blaisot [il], responsable SysRez-Dev de l'InsaLan XIX
 - Paul "**TheBloodMan**" Gasnier [il], responsable SysRez-Infra de l'InsaLan XVIII
-- Youenn "**SktAsul**" Le Jeune [il], responsable SysRez-Infra de l'InsaLan XVIII
+- Youenn "**SkytAsul**" Le Jeune [il], responsable SysRez-Infra de l'InsaLan XVIII
 - Amance "**Ecnama**" Graindorge [il], responsable SysRez-Infra de l'InsaLan XIX
 - Hector "**pixup1**" Vernet [il], responsable SysRez-Infra de l'InsaLan XIX
 
