@@ -8,11 +8,15 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
+from langate.utils.renderers import PlainTextRenderer
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
+
+import prometheus_client as prometheus
 
 from langate.settings import SETTINGS
 from langate.user.models import Role
@@ -479,3 +483,9 @@ class UserDeviceDetail(APIView):
             return Response({"error": _("Device not found")}, status=status.HTTP_404_NOT_FOUND)
         except ValidationError as e:
             return Response({"error": e.message}, status=status.HTTP_400_BAD_REQUEST)
+
+class Metrics(APIView):
+    renderer_classes = [PlainTextRenderer]
+
+    def get(self, request):
+        return HttpResponse(prometheus.generate_latest().decode("utf-8"), content_type=prometheus.CONTENT_TYPE_LATEST)

@@ -8,3 +8,4 @@ django-cors-headers==4.5.0
 tzdata==2024.2
 requests==2.32.3
 drf-yasg==1.21.7
+prometheus-client==0.21.1

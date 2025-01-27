@@ -13,4 +13,5 @@ urlpatterns = [
     path("mark/<int:old>/spread/", views.MarkSpread.as_view(), name="mark-spread"),
     path("games/", views.GameList.as_view(), name="game-list"),
     path("userdevices/<int:pk>/", views.UserDeviceDetail.as_view(), name="user-device-detail"),
+    path("metrics/", views.Metrics.as_view(), name="metrics"),
 ]

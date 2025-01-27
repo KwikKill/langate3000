@@ -21,6 +21,8 @@ from langate.modules.netcontrol import Netcontrol
 from django.utils.translation import gettext_lazy as _
 from langate.network.utils import validate_marks, validate_games
 
+import prometheus_client as prometheus
+
 logger = logging.getLogger(__name__)
 
 
@@ -261,3 +263,7 @@ NETCONTROL_SOCKET_FILE = getenv("NETCONTROL_SOCKET_FILE", "/var/run/langate3000-
 
 # Netcontrol interface
 netcontrol = Netcontrol()
+
+prometheus.REGISTRY.unregister(prometheus.PLATFORM_COLLECTOR)
+prometheus.REGISTRY.unregister(prometheus.PROCESS_COLLECTOR)
+prometheus.REGISTRY.unregister(prometheus.GC_COLLECTOR)

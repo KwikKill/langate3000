@@ -33,16 +33,16 @@ def root():
     return "netcontrol is running"
  
 @app.post("/connect_user")
-def connect_user(mac: str, mark: int, name: str):
-    return nft.connect_user(mac, mark, name)
+def connect_user(mac: str, mark: int, name: str) -> None:
+    nft.connect_user(mac, mark, name)
 
 @app.delete("/disconnect_user")
-def delete_user(mac: str):
-    return nft.delete_user(mac)
+def delete_user(mac: str) -> None:
+    nft.delete_user(mac)
 
 @app.put("/set_mark")
-def set_mark(mac: str, mark: int):
-    return nft.set_mark(mac, mark)
+def set_mark(mac: str, mark: int) -> None:
+    nft.set_mark(mac, mark)
 
 @app.get("/get_mac")
 def get_mac(ip: str):

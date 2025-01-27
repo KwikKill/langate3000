@@ -2,10 +2,15 @@ import requests
 import subprocess
 import logging
 
+import prometheus_client as prometheus
+
 GET_REQUESTS = ["get_mac", "get_ip", '']
 POST_REQUESTS = ["connect_user"]
 DELETE_REQUESTS = ["disconnect_user"]
 PUT_REQUESTS = ["set_mark"]
+
+connected_devices_gauge = prometheus.Gauge("langate_connected_devices", "Amount of connected devices", labelnames=["mark"])
+mark_table = {} # used to keep track of mark for MAC addresses between requests
 
 class Netcontrol:
     """
@@ -58,26 +63,42 @@ class Netcontrol:
         self.logger.info(f"Getting IP address of {mac}...")
         return self.request("get_ip", {"mac": mac})["ip"]
 
-    def connect_user(self, mac: str, mark: int, name: str):
+    def connect_user(self, mac: str, mark: int, name: str) -> None:
         """
         Connect the user with the given MAC address.
         """
         self.logger.info(f"Connecting user with MAC address {mac} ({name})...")
-        return self.request("connect_user", {"mac": mac, "mark": mark, "name": name})
+        try:
+            self.request("connect_user", {"mac": mac, "mark": mark, "name": name})
+            mark_table[mac] = mark
+            connected_devices_gauge.labels(str(mark)).inc()
+        except:
+            raise
 
-    def disconnect_user(self, mac: str):
+    def disconnect_user(self, mac: str) -> None:
         """
         Disconnect the user with the given MAC address.
         """
         self.logger.info(f"Disconnecting user with MAC address {mac}...")
-        return self.request("disconnect_user", {"mac": mac})
+        try:
+            self.request("disconnect_user", {"mac": mac})
+            if mac in mark_table:
+                old_mark = mark_table.pop(mac)
+                connected_devices_gauge.labels(str(old_mark)).dec()
+        except:
+            raise
 
-    def set_mark(self, mac: str, mark: int):
+    def set_mark(self, mac: str, mark: int) -> None:
         """
         Set the mark of the user with the given MAC address.
         """
         self.logger.info(f"Setting mark of user with MAC address {mac} to {mark}...")
-        return self.request("set_mark", {"mac": mac, "mark": mark})
+        self.request("set_mark", {"mac": mac, "mark": mark})
+        if mac in mark_table:
+            old_mark = mark_table[mac]
+            connected_devices_gauge.labels(str(old_mark)).dec()
+        mark_table[mac] = mark
+        connected_devices_gauge.labels(str(mark)).inc()
 
     def __init__(self):
         """

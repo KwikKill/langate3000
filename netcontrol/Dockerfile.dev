@@ -12,4 +12,7 @@ RUN pip install -r /nctl/requirements.txt
 
 COPY . /nctl
 
-CMD ["fastapi", "dev", "main.py", "--port", "6784"]
+# We bind to 0.0.0.0 and the nft rules will forbid outside access.
+# In the "production" Dockerfile, we do not need the --host parameter
+# since "fastapi run" binds to 0.0.0.0 by default.
+CMD ["fastapi", "dev", "main.py", "--port", "6784", "--host", "0.0.0.0"]
