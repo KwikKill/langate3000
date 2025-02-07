@@ -28,3 +28,6 @@ Enfin, on monte trois dossiers spécifiques au fonctionnement de Caddy :
 Les configurations des sections concernant le [backend](./backend.md) et le [frontend](./frontend.md) sont expliquées en détail dans leurs pages respectives.
 
 Dans le Caddyfile, on a aussi défini une méthode : `server-log`, qui prend 1 argument : le nom du logger. Cette méthode est appelée dans les sections du frontend et du backend et permet de logguer les requêtes dans des fichiers séparés, avec un format facile à lire.
+
+## Schéma
+![schéma des proxies](proxies.png)
