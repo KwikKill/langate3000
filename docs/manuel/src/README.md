@@ -25,7 +25,7 @@ Il a donc été décidé de créer cette version de la langate. Elle nous permet
 
 ## Technologies
 
-Cette langate, comme le site web [insalan.fr](https://docs.insalan.fr/backend/), utilise [Nginx](nginx.com) et [DRF](django-rest-framework.org) (outil permettant de développer des API web en **Python**) pour le [backend](01-backend/README.md) et [Vue](https://fr.vuejs.org) pour le [frontend](02-frontend/README.md).
+Cette langate, comme le site web [insalan.fr](https://docs.insalan.fr/backend/), utilise [DRF](django-rest-framework.org) (outil permettant de développer des API web en **Python**) pour le [backend](01-backend/README.md) et [Vue](https://fr.vuejs.org) pour le [frontend](02-frontend/README.md). Le [reverse proxy](03-proxy/README.md) utilisé est [Caddy](https://caddyserver.com).
 
 Le module [netcontrol](00-netcontrol/README.md) a également été entièrement refait, incorporant directement les [nftables](00-netcontrol/nftables.md) nécéssaires à son fonctionnement.
 
@@ -37,7 +37,7 @@ La langate 3000 est le fruit d'une coopération historique entre les équipes Sy
 
 - Gabriel "**KwikKill**" Blaisot [il], responsable SysRez-Dev de l'InsaLan XIX
 - Paul "**TheBloodMan**" Gasnier [il], responsable SysRez-Infra de l'InsaLan XVIII
-- Youenn "**SktAsul**" Le Jeune [il], responsable SysRez-Infra de l'InsaLan XVIII
+- Youenn "**SkytAsul**" Le Jeune [il], responsable SysRez-Infra de l'InsaLan XVIII
 - Amance "**Ecnama**" Graindorge [il], responsable SysRez-Infra de l'InsaLan XIX
 - Hector "**pixup1**" Vernet [il], responsable SysRez-Infra de l'InsaLan XIX
 

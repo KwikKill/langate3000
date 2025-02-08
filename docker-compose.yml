@@ -11,7 +11,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASS: ${DB_PASS}
-      NGINX_PORT: ${EXTERNAL_NGINX_PORT}
+      PROXY_PORT: ${EXTERNAL_PROXY_PORT}
       STATIC_ROOT: ${BACKEND_STATIC_ROOT}
       MEDIA_ROOT: ${BACKEND_MEDIA_ROOT}
       SUPERUSER_USER: ${SUPERUSER_USER}
@@ -70,21 +70,23 @@ services:
     networks:
       - backend
 
-  nginx:
-    image: nginx
+  caddy:
+    image: caddy
+    restart: unless-stopped
     environment:
-      - NGINX_HOST=${WEBSITE_HOST}
-      - NGINX_PORT=80
+      - CADDY_HOST=${WEBSITE_HOST}
+      - CADDY_PORT=80
       - STATIC_ROOT=${BACKEND_STATIC_ROOT}
       - MEDIA_ROOT=${BACKEND_MEDIA_ROOT}
     ports:
-      - "${PROD_NGINX_PORT}:80"
+      - "${PROD_PROXY_PORT}:80"
     volumes:
-      - ./volumes/prod/backend:/usr/share/nginx/html
-      - ./volumes/prod/frontend:/usr/share/nginx/html/frontend
-      - ./nginx/templates/prod:/etc/nginx/templates:ro
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./volumes/prod/nginx/logs:/var/log/nginx
+      - ./volumes/prod/backend:/srv/backend
+      - ./volumes/prod/frontend:/srv/frontend
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./volumes/prod/caddy/data:/data
+      - ./volumes/prod/caddy/config:/config
+      - ./volumes/prod/caddy/logs:/var/log/caddy
     networks:
       - backend
     depends_on:

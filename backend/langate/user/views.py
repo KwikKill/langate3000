@@ -46,6 +46,17 @@ def get_csrf(request):
     """
     return JsonResponse({"csrf": _("CSRF cookie set")})
 
+def get_original_ip(request):
+    """
+    Returns the IP address that created the request
+    """
+    if "x-real-ip" not in request.headers:
+        raise requests.exceptions.InvalidHeader(
+            0, "Cannot find IP address. Is the reverse proxy configured correctly?",
+            request=request
+        )
+    return request.headers["x-real-ip"]
+
 # Filter, can only acces this view when user.role == 'admin' or 'staff'
 class StaffPermission(permissions.BasePermission):
     """
@@ -100,7 +111,7 @@ class UserMe(generics.RetrieveAPIView):
         user = UserSerializer(request.user, context={"request": request}).data
 
         user_devices = UserDevice.objects.filter(user=request.user)
-        client_ip = request.META.get('HTTP_X_FORWARDED_FOR')
+        client_ip = get_original_ip(request)
 
         if not user_devices.filter(ip=client_ip).exists():
             # If the user is still logged in but the device is not registered on the network,
@@ -241,7 +252,7 @@ class UserLogin(APIView):
             user = UserSerializer(user, context={"request": request}).data
 
             # handle user device
-            client_ip = request.META.get('HTTP_X_FORWARDED_FOR')
+            client_ip = get_original_ip(request)
             user_devices = UserDevice.objects.filter(user=request.user)
 
             user["current_ip"] = client_ip
@@ -330,7 +341,7 @@ class UserLogout(APIView):
             return Response(status=status.HTTP_200_OK)
 
         user_devices = UserDevice.objects.filter(user=request.user)
-        client_ip = request.META.get('HTTP_X_FORWARDED_FOR')
+        client_ip = get_original_ip(request)
 
         if user_devices.filter(ip=client_ip).exists():
             # When the user decides to disconnect from the portal from a device,

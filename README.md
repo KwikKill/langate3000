@@ -1,7 +1,7 @@
 # Langate 3000 infrastructure
 
 This repository is here to hold the langate infrastructure. It is composed of
-the frontend, the backend, netcontrol, and the nginx server.
+the frontend, the backend and netcontrol servers, alongside the configuration for tools to make it work (Caddy and a database).
 
 ## Documentation
 
@@ -34,7 +34,7 @@ docker compose -f docker-compose-beta.yml down
 
 The "beta" environment is available at `beta.WEBSITE_HOST` and it's own API at `api.beta.WEBSITE_HOST`.
 
-There is hotreload for the front (with vite), back (with django runserver), and nginx (thanks to a custom script)
+There is hotreload for the front (with vite) and the back (with django runserver).
 
 ## Running the prod environment
 

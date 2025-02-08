@@ -17,3 +17,7 @@
   - [Vues](02-frontend/vues.md)
     - [Page de gestion](02-frontend/gestion.md)
   - [Style](02-frontend/style.md)
+
+- [Reverse Proxy](03-proxy/README.md)
+  - [Frontend](03-proxy/frontend.md)
+  - [Backend](03-proxy/backend.md)

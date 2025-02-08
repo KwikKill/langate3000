@@ -42,7 +42,7 @@ DEBUG = int(getenv("DEV", "0")) == 1
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 PROTOCOL = getenv("HTTP_PROTOCOL", "http")
 
-OUTSIDE_PORT = getenv("NGINX_PORT", "80")
+OUTSIDE_PORT = getenv("PROXY_PORT", "80")
 if (OUTSIDE_PORT == "80" and PROTOCOL == "http") or (OUTSIDE_PORT == "443" and PROTOCOL == "https"):
     OUTSIDE_PORT = "" # Don't specify it
 else:

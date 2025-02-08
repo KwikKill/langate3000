@@ -58,11 +58,6 @@ class NetworkConfig(AppConfig):
                 except requests.HTTPError as e:
                     logger.info("[PortalConfig] {e}")
 
-                try:
-                    mark_res = netcontrol.set_mark(dev.mac, dev.mark)
-                except requests.HTTPError as e:
-                    logger.info("[PortalConfig] {e}")
-
             logger.info(_("[PortalConfig] Add default whitelist devices to the ipset"))
             if os.path.exists("assets/misc/whitelist.txt"):
                 with open("assets/misc/whitelist.txt", "r") as f:

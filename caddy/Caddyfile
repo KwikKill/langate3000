@@ -1,0 +1,32 @@
+(server-log) {
+	log {args[0]} {
+		output file /var/log/caddy/{args[0]}.log {
+			roll_keep 2
+			roll_uncompressed
+		}
+		format console {
+			level_format upper
+		}
+	}
+}
+
+{$CADDY_HOST}:{$CADDY_PORT} {
+	root /srv/frontend
+	try_files {path} {path}/ /index.html
+	file_server {
+		hide .*
+	}
+
+	import server-log frontend
+}
+
+api.{$CADDY_HOST}:{$CADDY_PORT} {
+	@file_routes path /{$STATIC_ROUTE} /{$MEDIA_ROUTE}
+	file_server @file_routes {
+		root /srv/frontend
+	}
+
+	reverse_proxy http://backend:8000
+
+	import server-log backend
+}
