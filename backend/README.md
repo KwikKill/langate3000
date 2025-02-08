@@ -3,7 +3,7 @@
 ## Description
 
 This is the backend of the Langate 3000 by Insalan. It is a Django and Django rest
-framework application. It is served by a Nginx server.
+framework application. It is served by the [proxy (Caddy)](../caddy/).
 The backend is responsible for handling the data of the Langate 3000.
 
 ## Contributing

@@ -3,7 +3,7 @@
 ## Description
 
 This is the frontend of the Langate 3000 by Insalan. It is a Vue.js application. It is
-served by a Nginx server. The frontend is responsible for displaying the data and
+served by the [proxy (Caddy)](../caddy/). The frontend is responsible for displaying the data and
 interacting with the backend.
 
 ## Contributing
